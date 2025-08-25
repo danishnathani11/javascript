@@ -1,106 +1,102 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Cafe Project</title>
+  <meta charset="UTF-8">
+  <title>Project Tasks</title>
 </head>
 <body>
-  <h2>My Cafe System</h2>
+  <h2 id="output">Results will appear here...</h2>
 
-  <button onclick="orderFood()">Place Order</button>
-  <button onclick="showBill()">View Bill</button>
-  <button onclick="discountBill()">Apply Discount</button>
-  <button onclick="changePass()">Change Password</button>
-  <button onclick="report()">View Report</button>
-
-  <pre id="result"></pre>
-
-<script>
-
-let menu = {
-  1: {item:"Coffee", price:50},
-  2: {item:"Tea", price:30},
-  3: {item:"Sandwich", price:80},
-  4: {item:"Pastry", price:100}
-};
-
-
-let orderList = [];
-let cafePass = "1234";
-
-
-function orderFood(){
-  let choice;
-  do{
-    let msg="Menu:\n";
-    for(let i in menu){
-      msg += i+". "+menu[i].item+" (₹"+menu[i].price+")\n";
+  <script>
+    
+    function arithmeticCalculator(num1, num2, op) {
+      let result;
+      switch (op) {
+        case '+': result = num1 + num2; break;
+        case '-': result = num1 - num2; break;
+        case '*': result = num1 * num2; break;
+        case '/': result = num2 !== 0 ? num1 / num2 : "Division by 0"; break;
+        case '%': result = num1 % num2; break;
+        default: result = "Invalid Operator";
+      }
+      return result;
     }
-    msg += "0. Exit";
-    choice = parseInt(prompt(msg));
-    if(menu[choice]){
-      orderList.push(menu[choice].price);
-      show("You ordered "+menu[choice].item+" Price: ₹"+menu[choice].price);
-      show("Current Total: ₹"+totalBill());
+
+    
+    function square(n) { return n * n; }
+    function cube(n) { return n * n * n; }
+
+    
+    function factorial(n) {
+      if (n === 0 || n === 1) return 1;
+      return n * factorial(n - 1);
     }
-  }while(choice!=0);
-}
+
+    
+    function checkEvenOdd(n) {
+      return (n % 2 === 0) ? "Even" : "Odd";
+    }
+
+    
+    function printResult(msg) {
+      console.log(msg);
+      document.getElementById("output").innerHTML = msg;
+      alert(msg);
+    }
+
+    
+    function menu() {
+      let choice;
+      do {
+        choice = parseInt(prompt(
+          ``
+        ));
+
+        switch (choice) {
+          case 1: {
+            let a = Number(prompt("Enter first number:"));
+            let b = Number(prompt("Enter second number:"));
+            let op = prompt("Enter operator (+, -, *, /, %):");
+            let ans = arithmeticCalculator(a, b, op);
+            printResult(`Result: ${a} ${op} ${b} = ${ans}`);
+            break;
+          }
+
+          case 2: {
+            let n = Number(prompt("Enter a number:"));
+            let sq = square(n);
+            let cb = cube(n);
+            printResult(`Square of ${n} = ${sq}, Cube of ${n} = ${cb}`);
+            break;
+          }
+
+          case 3: {
+            let n = Number(prompt("Enter a number:"));
+            let fact = factorial(n);
+            printResult(`Factorial of ${n} = ${fact}`);
+            break;
+          }
+
+          case 4: {
+            let n = Number(prompt("Enter a number:"));
+            let res = checkEvenOdd(n);
+            printResult(`${n} is ${res}`);
+            break;
+          }
+
+          case 5:
+            alert("Exiting program...");
+            break;
+
+          default:
+            alert("Invalid choice! Try again.");
+        }
+
+      } while (choice !== 5);
+    }
 
 
-function showBill(){
-  if(orderList.length==0){ show("No order yet"); return; }
-  let sub = totalBill();
-  let gst = sub*0.05;
-  let grand = sub+gst;
-  show("Subtotal: ₹"+sub);
-  show("GST (5%): ₹"+gst.toFixed(2));
-  show("Grand Total: ₹"+grand.toFixed(2));
-}
-
-
-function discountBill(){
-  if(orderList.length==0){ show("No order yet"); return; }
-  let sub = totalBill();
-  let disc = 0;
-  if(sub>1000) disc=sub*0.2;
-  else if(sub>500) disc=sub*0.1;
-  let final=sub-disc;
-  show("Original: ₹"+sub);
-  show("Discount: ₹"+disc.toFixed(2));
-  show("Final: ₹"+final.toFixed(2));
-}
-
-
-function changePass(){
-  let oldp = prompt("Enter old password:");
-  if(oldp==cafePass){
-    cafePass = prompt("Enter new password:");
-    show("Password changed successfully");
-  }else{
-    show("Incorrect old password");
-  }
-}
-
-function report(){
-  if(orderList.length==0){ show("No order yet"); return; }
-  let total=orderList.length;
-  let high=Math.max(...orderList);
-  let low=Math.min(...orderList);
-  let avg=totalBill()/total;
-  show("Total Items Sold: "+total);
-  show("Highest Price Item: ₹"+high);
-  show("Lowest Price Item: ₹"+low);
-  show("Average Price: ₹"+avg.toFixed(2));
-}
-
-
-function totalBill(){
-  return orderList.reduce((a,b)=>a+b,0);
-}
-
-function show(txt){
-  console.log(txt);
-  document.getElementById("result").innerText += txt+"\n";
-}
-</script>
+    menu();
+  </script>
 </body>
 </html>
