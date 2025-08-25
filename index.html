@@ -1,114 +1,100 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Travel Planner (Student Ver.)</title>
+  <title>Simple Image Slider</title>
 </head>
 <body>
-  <h2 id="result">📌 Travel Summary will appear here...</h2>
+  <h2>Image Slider Project</h2>
+
+  <div>
+    <img id="slideImage" src="" width="400" height="250"><br>
+    <p id="caption"></p>
+    <p id="counter"></p>
+  </div>
+
+  <button onclick="prevSlide()">Prev</button>
+  <button onclick="nextSlide()">Next</button>
+  <button onclick="startAuto()">Auto Play</button>
+  <button onclick="stopAuto()">Pause</button>
+
+  <h3>Add New Slide</h3>
+  <input type="text" id="imgUrl" placeholder="Image URL"><br><br>
+  <input type="text" id="imgCap" placeholder="Caption"><br><br>
+  <button onclick="addSlide()">Add</button>
 
   <script>
     
-    function askIntInRange(msg, min, max) {
-      let x;
-      while (true) { 
-        x = prompt(msg);
-        if (x === null) continue;           
-        x = parseInt(x.trim(), 10);
-        if (!Number.isNaN(x) && x >= min && x <= max) return x;
-        alert(`Please enter a number between ${min} and ${max}.`);
+    let slides = [
+      { img: "https://picsum.photos/id/1015/400/250", caption: "Beautiful Sunset" },
+      { img: "https://picsum.photos/id/1016/400/250", caption: "Mountain View" },
+      { img: "https://picsum.photos/id/1018/400/250", caption: "Green Valley" }
+    ];
+
+    let index = 0;
+    let auto;
+
+    
+    function showSlide(i) {
+      document.getElementById("slideImage").src = slides[i].img;
+      document.getElementById("caption").innerHTML = slides[i].caption;
+      document.getElementById("counter").innerHTML = "Slide " + (i+1) + " of " + slides.length;
+      console.log("Slide " + (i+1) + ": " + slides[i].caption);
+    }
+
+    
+    function prevSlide() {
+      if (index > 0) {
+        index--;
+        showSlide(index);
+      } else {
+        alert("This is the first slide");
       }
     }
 
     
-    function askNumberMin(msg, min) {
-      let x;
-      do { 
-        x = prompt(msg);
-        if (x === null) continue;
-        x = Number(x.trim());
-      } while (Number.isNaN(x) || x < min);
-      return x;
+    function nextSlide() {
+      if (index < slides.length-1) {
+        index++;
+        showSlide(index);
+      } else {
+        alert("This is the last slide");
+      }
     }
 
     
-    function askText(msg) {
-      let t = "";
-      while (!t) {
-        const v = prompt(msg);
-        if (v === null) continue;
-        t = v.trim();
+    function addSlide() {
+      let url = document.getElementById("imgUrl").value;
+      let cap = document.getElementById("imgCap").value;
+      if (url && cap) {
+        slides.push({ img: url, caption: cap });
+        alert("Slide Added!");
+        index = slides.length - 1;
+        showSlide(index);
+      } else {
+        alert("Enter both URL and Caption");
       }
-      return t;
-    }
-
-    function hotelSuggestion(budget, days) {
-      
-      const perDay = days > 0 ? budget / days : 0;
-      if (perDay < 2000) return "Budget Hotels";
-      else if (perDay <= 5000) return "Mid-range Hotels";
-      return "Luxury Hotels";
-    }
-
-    function getDestinations() {
-      const count = askIntInRange("How many destinations? (3 to 5)", 3, 5);
-      const arr = [];
-      for (let i = 0; i < count; i++) { 
-        const d = askText(`Enter destination ${i + 1}:`);
-        arr.push(d);
-      }
-      return arr;
-    }
-
-    function budgetMessage(budget) {
-      if (budget < 10000) return "Plan a short domestic trip.";
-      else if (budget <= 50000) return "You can plan a long domestic trip.";
-      return "International trip possible!";
-    }
-
-    function tripType(days) {
-      if (days < 3) return "Weekend Getaway";
-      else if (days <= 7) return "Perfect Holiday Trip";
-      return "Extended Vacation";
-    }
-
-    function showSummary(text) {
-      console.log(text);
-      document.getElementById("result").innerHTML = text.replace(/\n/g, "<br>");
-      alert("Trip Planning Completed! Check the page or console for details.");
-    }
-
-    function travelPlanner() {
-      
-      const destinations = getDestinations();
-
-      
-      const budget = askNumberMin("Enter your total budget (₹):", 0);
-
-      
-      const days = askNumberMin("Enter number of travel days:", 1);
-
-      
-      const bMsg  = budgetMessage(budget);
-      const tType = tripType(days);
-      const hotel = hotelSuggestion(budget, days);
-
-      
-      const summary = `
-Destinations Entered: [${destinations.join(", ")}]
-Total Budget: ₹${budget}
-Days Planned: ${days}
-Trip Type: ${tType}
-Hotel Suggestion: ${hotel}
-Travel Summary: ${bMsg}
-      `;
-
-      showSummary(summary);
     }
 
     
-    travelPlanner();
+    function startAuto() {
+      stopAuto();
+      auto = setInterval(function() {
+        if (index < slides.length-1) {
+          index++;
+        } else {
+          index = 0;
+        }
+        showSlide(index);
+      }, 3000);
+    }
+
+    
+    function stopAuto() {
+      clearInterval(auto);
+    }
+
+    
+    showSlide(index);
   </script>
 </body>
 </html>
-
