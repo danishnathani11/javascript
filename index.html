@@ -1,102 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Project Tasks</title>
+  <meta charset="UTF-8" />
+  <title>Travel Planner (Student Ver.)</title>
 </head>
 <body>
-  <h2 id="output">Results will appear here...</h2>
+  <h2 id="result">📌 Travel Summary will appear here...</h2>
 
   <script>
-    
-    function arithmeticCalculator(num1, num2, op) {
-      let result;
-      switch (op) {
-        case '+': result = num1 + num2; break;
-        case '-': result = num1 - num2; break;
-        case '*': result = num1 * num2; break;
-        case '/': result = num2 !== 0 ? num1 / num2 : "Division by 0"; break;
-        case '%': result = num1 % num2; break;
-        default: result = "Invalid Operator";
+    // -----------------------------
+    // Helper Inputs (simple student-style)
+    // -----------------------------
+    // Ask an integer in [min..max]
+    function askIntInRange(msg, min, max) {
+      let x;
+      while (true) { // while-loop validation
+        x = prompt(msg);
+        if (x === null) continue;           // avoid cancel
+        x = parseInt(x.trim(), 10);
+        if (!Number.isNaN(x) && x >= min && x <= max) return x;
+        alert(`Please enter a number between ${min} and ${max}.`);
       }
-      return result;
     }
 
-    
-    function square(n) { return n * n; }
-    function cube(n) { return n * n * n; }
-
-    
-    function factorial(n) {
-      if (n === 0 || n === 1) return 1;
-      return n * factorial(n - 1);
+    // Ask a number >= min
+    function askNumberMin(msg, min) {
+      let x;
+      do { // do-while example
+        x = prompt(msg);
+        if (x === null) continue;
+        x = Number(x.trim());
+      } while (Number.isNaN(x) || x < min);
+      return x;
     }
 
-    
-    function checkEvenOdd(n) {
-      return (n % 2 === 0) ? "Even" : "Odd";
+    // Ask non-empty text
+    function askText(msg) {
+      let t = "";
+      while (!t) {
+        const v = prompt(msg);
+        if (v === null) continue;
+        t = v.trim();
+      }
+      return t;
     }
 
-    
-    function printResult(msg) {
-      console.log(msg);
-      document.getElementById("output").innerHTML = msg;
-      alert(msg);
+    // -----------------------------
+    // 🛏️ Hotel Suggestion (UDF)
+    // -----------------------------
+    function hotelSuggestion(budget, days) {
+      // guard: days == 0 not allowed (but validation already prevents it)
+      const perDay = days > 0 ? budget / days : 0;
+      if (perDay < 2000) return "Budget Hotels";
+      else if (perDay <= 5000) return "Mid-range Hotels";
+      return "Luxury Hotels";
     }
 
-    
-    function menu() {
-      let choice;
-      do {
-        choice = parseInt(prompt(
-          ``
-        ));
-
-        switch (choice) {
-          case 1: {
-            let a = Number(prompt("Enter first number:"));
-            let b = Number(prompt("Enter second number:"));
-            let op = prompt("Enter operator (+, -, *, /, %):");
-            let ans = arithmeticCalculator(a, b, op);
-            printResult(`Result: ${a} ${op} ${b} = ${ans}`);
-            break;
-          }
-
-          case 2: {
-            let n = Number(prompt("Enter a number:"));
-            let sq = square(n);
-            let cb = cube(n);
-            printResult(`Square of ${n} = ${sq}, Cube of ${n} = ${cb}`);
-            break;
-          }
-
-          case 3: {
-            let n = Number(prompt("Enter a number:"));
-            let fact = factorial(n);
-            printResult(`Factorial of ${n} = ${fact}`);
-            break;
-          }
-
-          case 4: {
-            let n = Number(prompt("Enter a number:"));
-            let res = checkEvenOdd(n);
-            printResult(`${n} is ${res}`);
-            break;
-          }
-
-          case 5:
-            alert("Exiting program...");
-            break;
-
-          default:
-            alert("Invalid choice! Try again.");
-        }
-
-      } while (choice !== 5);
+    // -----------------------------
+    // 🌍 Destinations Input (UDF)
+    // -----------------------------
+    function getDestinations() {
+      const count = askIntInRange("How many destinations? (3 to 5)", 3, 5);
+      const arr = [];
+      for (let i = 0; i < count; i++) { // for-loop as required
+        const d = askText(`Enter destination ${i + 1}:`);
+        arr.push(d);
+      }
+      return arr;
     }
 
+    // -----------------------------
+    // 💰 Budget Message (UDF)
+    // -----------------------------
+    function budgetMessage(budget) {
+      if (budget < 10000) return "Plan a short domestic trip.";
+      else if (budget <= 50000) return "You can plan a long domestic trip.";
+      return "International trip possible!";
+    }
 
-    menu();
+    // -----------------------------
+    // 🗓️ Trip Type (UDF)
+    // -----------------------------
+    function tripType(days) {
+      if (days < 3) return "Weekend Getaway";
+      else if (days <= 7) return "Perfect Holiday Trip";
+      return "Extended Vacation";
+    }
+
+    // -----------------------------
+    // Output helper (UDF without return)
+    // -----------------------------
+    function showSummary(text) {
+      console.log(text);
+      document.getElementById("result").innerHTML = text.replace(/\n/g, "<br>");
+      alert("Trip Planning Completed! Check the page or console for details.");
+    }
+
+    // -----------------------------
+    // ✅ Main Flow
+    // -----------------------------
+    function travelPlanner() {
+      // 1) Destinations
+      const destinations = getDestinations();
+
+      // 2) Budget
+      const budget = askNumberMin("Enter your total budget (₹):", 0);
+
+      // 3) Days
+      const days = askNumberMin("Enter number of travel days:", 1);
+
+      // Messages
+      const bMsg  = budgetMessage(budget);
+      const tType = tripType(days);
+      const hotel = hotelSuggestion(budget, days);
+
+      // Final Summary (ES6 template literal)
+      const summary = `
+Destinations Entered: [${destinations.join(", ")}]
+Total Budget: ₹${budget}
+Days Planned: ${days}
+Trip Type: ${tType}
+Hotel Suggestion: ${hotel}
+Travel Summary: ${bMsg}
+      `;
+
+      showSummary(summary);
+    }
+
+    // Run
+    travelPlanner();
   </script>
 </body>
 </html>
